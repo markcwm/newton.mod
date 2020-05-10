@@ -256,7 +256,8 @@ void* dgThread::dgThreadSystemCallback(void* threadData)
 #ifdef _WIN32
 	BBThread * thd = bbThreadRegister(me->m_id);
 #else
-	BBThread * thd = bbThreadRegister(me->m_handle);
+	// Linux fix for: invalid conversion from ‘pthread_t {aka long unsigned int}’ to ‘void*’
+	BBThread * thd = bbThreadRegister((void *) me->m_handle);
 #endif
 #endif
 

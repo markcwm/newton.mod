@@ -24,7 +24,6 @@ SuperStrict
 Import "source.bmx"
 
 
-
 Extern
 
 	Function bmx_newtondynamics_NewtonCreate:Byte Ptr(obj:Object)
@@ -56,6 +55,15 @@ Extern
 	Function NewtonTreeCollisionBeginBuild(coll:Byte Ptr)
 	Function NewtonTreeCollisionEndBuild(coll:Byte Ptr, optimize:Int)
 	Function NewtonTreeCollisionAddFace(coll:Byte Ptr, vertexCount:Int, vertexPtr:Float Ptr, strideInBytes:Int, faceAttribute:Int)
+	
+	' moved
+	Function NewtonBodyGetUserData:Object(body:Byte Ptr)
+	Function NewtonCollisionGetUserData:Object(coll:Byte Ptr)
+	Function bmx_newtondynamics_RayCastDelegateFromPtr:Object(del:Byte Ptr)
+	
+	' new
+	Function NewtonBodySetUserData(body:Byte Ptr, userData:Object)
+	Function NewtonBodySetMassMatrix(body:Byte Ptr, mass:Float, Ixx:Float, Iyy:Float, Izz:Float)
 	
 	Function NewtonDestroyBody(body:Byte Ptr)
 	Function NewtonBodyGetMatrix(body:Byte Ptr, matrix:Float Ptr)

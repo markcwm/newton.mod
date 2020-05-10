@@ -26,11 +26,13 @@ bbdoc: Newton Dynamics
 End Rem
 Module Newton.Dynamics
 
-ModuleInfo "Version: 1.00"
+ModuleInfo "Version: 1.02"
 ModuleInfo "License: zlib"
 ModuleInfo "Copyright: Newton Dynamics - 2003-2011 Julio Jerez and Alain Suero"
 ModuleInfo "Copyright: Wrapper - 2015-2016 Bruce A Henderson"
 
+ModuleInfo "History: 1.02 Release - added DestroyAllBodies, SetMassMatrix, SetUserData, GetUserData"
+ModuleInfo "History: 1.01 Release - added TNMesh and GC Thread support"
 ModuleInfo "History: 1.00"
 ModuleInfo "History: Initial Release."
 
@@ -264,6 +266,15 @@ Type TNWorld
 		End If
 	End Method
 	
+	Rem
+	bbdoc: new
+	End Rem
+	Method DestroyAllBodies()
+		If worldPtr
+			NewtonDestroyAllBodies(worldPtr)
+		EndIf
+	End Method
+	
 End Type
 
 Rem
@@ -297,13 +308,13 @@ Type TNRayCastDelegate
 
 
 	Function _prefilterCallback:Int(bodyPtr:Byte Ptr, collPtr:Byte Ptr, delPtr:Byte Ptr)
-		Local delegate:TNRayCastDelegate = bmx_newtondynamics_RayCastDelegateFromPtr(delPtr)
-		Return delegate.OnPreFilter(NewtonBodyGetUserData(bodyPtr), NewtonCollisionGetUserData(collPtr))
+		Local delegate:TNRayCastDelegate = TNRayCastDelegate(bmx_newtondynamics_RayCastDelegateFromPtr(delPtr))
+		Return delegate.OnPreFilter(TNBody(NewtonBodyGetUserData(bodyPtr)), TNCollision(NewtonCollisionGetUserData(collPtr)))
 	End Function
 	
 	Function _filterCallback:Float(bodyPtr:Byte Ptr, collPtr:Byte Ptr, hitContact:Float Ptr, hitNormal:Float Ptr, delPtr:Byte Ptr, intersectParam:Float)
-		Local delegate:TNRayCastDelegate = bmx_newtondynamics_RayCastDelegateFromPtr(delPtr)
-		Return delegate.OnFilter(NewtonBodyGetUserData(bodyPtr), NewtonCollisionGetUserData(collPtr), hitContact, hitNormal, intersectParam)
+		Local delegate:TNRayCastDelegate = TNRayCastDelegate(bmx_newtondynamics_RayCastDelegateFromPtr(delPtr))
+		Return delegate.OnFilter(TNBody(NewtonBodyGetUserData(bodyPtr)), TNCollision(NewtonCollisionGetUserData(collPtr)), hitContact, hitNormal, intersectParam)
 	End Function
 	
 End Type
@@ -571,6 +582,13 @@ Type TNBody
 	End Method
 	
 	Rem
+	bbdoc: new
+	End Rem
+	Method SetMassMatrix(mass:Float, Ixx:Float, Iyy:Float, Izz:Float)
+		NewtonBodySetMassMatrix(bodyPtr, mass, Ixx, Iyy, Izz)
+	End Method
+	
+	Rem
 	bbdoc: 
 	End Rem
 	Method SetMassProperties(mass:Float, collision:TNCollision)
@@ -636,22 +654,22 @@ Type TNBody
 	
 	' internal
 	Function _forceAndTorqueCallback(bodyPtr:Byte Ptr, timestamp:Float, threadIndex:Int)
-		Local body:TNBody = NewtonBodyGetUserData(bodyPtr)
+		Local body:TNBody = TNBody(NewtonBodyGetUserData(bodyPtr))
 		body._fatCallback(body, timestamp, threadIndex)
 	End Function
 
 	Function _defaultForceAndTorqueCallback(bodyPtr:Byte Ptr, timestamp:Float, threadIndex:Int)
-		Local body:TNBody = NewtonBodyGetUserData(bodyPtr)
+		Local body:TNBody = TNBody(NewtonBodyGetUserData(bodyPtr))
 		body.OnForceAndTorque(timestamp, threadIndex)
 	End Function
 
 	Function _transformCallback(bodyPtr:Byte Ptr, matrix:Float Ptr, threadIndex:Int)
-		Local body:TNBody = NewtonBodyGetUserData(bodyPtr)
+		Local body:TNBody = TNBody(NewtonBodyGetUserData(bodyPtr))
 		body._transCallback(body, matrix, threadIndex)
 	End Function
 
 	Function _defaultTransformCallback(bodyPtr:Byte Ptr, matrix:Float Ptr, threadIndex:Int)
-		Local body:TNBody = NewtonBodyGetUserData(bodyPtr)
+		Local body:TNBody = TNBody(NewtonBodyGetUserData(bodyPtr))
 		body.OnTransform(matrix, threadIndex)
 	End Function
 
@@ -664,7 +682,21 @@ Type TNBody
 			bodyPtr = Null
 		End If
 	End Method
-
+	
+	Rem
+	bbdoc: new
+	End Rem
+	Method SetUserData(userData:Object)
+		NewtonBodySetUserData(Self, userData)
+	End Method
+	
+	Rem
+	bbdoc: new
+	End Rem
+	Method GetUserData:Object()
+		Return NewtonBodyGetUserData(Self)
+	End Method
+	
 End Type
 
 Rem
@@ -902,9 +934,3 @@ Type TNMatrix
 	End Method
 	
 End Type
-
-Extern
-	Function NewtonBodyGetUserData:TNBody(body:Byte Ptr)
-	Function NewtonCollisionGetUserData:TNCollision(coll:Byte Ptr)
-	Function bmx_newtondynamics_RayCastDelegateFromPtr:TNRayCastDelegate(del:Byte Ptr)
-End Extern
