@@ -2,8 +2,6 @@
 
 SuperStrict
 
-'Rem
-
 Rem
 bbdoc: Newton wrapper for OpenB3DMax
 about:
@@ -15,11 +13,9 @@ ModuleInfo "Version: 1.00"
 ModuleInfo "License: zlib"
 ModuleInfo "Copyright: Newton Dynamics - 2003-2011 Julio Jerez and Alain Suero"
 ModuleInfo "Copyright: Newton Wrapper - 2015-2016 Bruce A Henderson"
-ModuleInfo "Copyright: Newton for OpenB3DMax - 2016 James Boyd (HiToro/DruggedBunny)"
+ModuleInfo "Copyright: Newton for OpenB3DMax - 2016 James Boyd (DruggedBunny)"
 
-'EndRem
-
-Import Openb3dmax.B3dglgraphics
+Import Openb3dmax.Openb3dmax
 Import Newton.Dynamics
 
 Include "inc/newtonbody.bmx"

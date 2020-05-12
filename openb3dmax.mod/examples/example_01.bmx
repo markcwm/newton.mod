@@ -3,7 +3,8 @@
 
 SuperStrict
 
-Framework Newton.Openb3dmax
+Framework Openb3dmax.B3dglgraphics
+Import Newton.Openb3dmax
 Import Brl.Random
 
 Include "newton_helpers.bmx"
